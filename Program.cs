@@ -113,5 +113,9 @@ class Program
 
         _st.Stop();
         Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {result.ToString("F25")}");
+
+        int matching_int = Decimal.Compare(result, (decimal)715.5556661152230339999809352);
+        bool matching = (matching_int == 0);
+        Console.WriteLine($"Result Matching: {matching}");
     }
 }
