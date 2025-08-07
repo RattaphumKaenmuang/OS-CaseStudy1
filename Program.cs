@@ -13,6 +13,7 @@ class Program
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
     static int index = 0;
+    static int thCount = 0;
 
     //Algorithm of CalClass.Calculate1()
     //{        
@@ -64,13 +65,15 @@ class Program
     {
         CalClass CF = new CalClass();
         int i = 0;
+        int thCountLocal = thCount;
+        thCount++;
 
         while (i < 30)
         {
-            index = 0;
-            while (index < 10000000)
+            int localIndex = 10000000 / 2 * thCountLocal;
+            while (localIndex < 10000000 / 2 * (thCountLocal+1))
             {
-                result += CF.Calculate1(ref data, ref index);
+                result += CF.Calculate1(ref data, ref localIndex);
             }
             i++;
         }
@@ -95,15 +98,15 @@ class Program
         Console.WriteLine("Calculation start ...");
 
         Thread Th1 = new Thread(ThreadWork);
-        //Thread Th2 = new Thread(ThreadWork);
+        Thread Th2 = new Thread(ThreadWork);
 
         Stopwatch _st = new Stopwatch();
         _st.Start();
 
         Th1.Start();
-        //Th2.Start();
+        Th2.Start();
         Th1.Join(); // Wait for the thread to finish
-        //Th2.Join(); // Wait for the thread to finish
+        Th2.Join(); // Wait for the thread to finish
 
         _st.Stop();
         Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {result.ToString("F25")}");
