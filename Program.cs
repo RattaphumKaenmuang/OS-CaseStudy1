@@ -61,24 +61,30 @@ class Program
     //    }
     //}
 
-    private static void ThreadWork()
+    private static void ThreadWork(object obj)
     {
         CalClass CF = new CalClass();
         int i = 0;
-        int localThIdx = thIdx++;
+        int localThIdx = (int)obj;
         Console.WriteLine("localThIdx: {0}", localThIdx);
 
         int lowerBound = 10000000 / 2 * localThIdx;
         int upperBound = 10000000 / 2 * (localThIdx + 1);
         int localIdx = lowerBound;
+        decimal localResult = 0;
         Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t localIdx: {localIdx}");
         while (i < 30)
         {
             while (localIdx < upperBound)
             {
-                result += CF.Calculate1(ref data, ref localIdx);
+                localResult += CF.Calculate1(ref data, ref localIdx);
             }
             i++;
+        }
+
+        lock (typeof(Program))
+        {
+            result += localResult;        
         }
     }
 
@@ -106,8 +112,8 @@ class Program
         Stopwatch _st = new Stopwatch();
         _st.Start();
 
-        Th1.Start();
-        Th2.Start();
+        Th1.Start(0);
+        Th2.Start(1);
         Th1.Join(); // Wait for the thread to finish
         Th2.Join(); // Wait for the thread to finish
 
