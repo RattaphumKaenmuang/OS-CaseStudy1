@@ -13,7 +13,7 @@ class Program
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
     static int index = 0;
-    static int thCount = 0;
+    static int thIdx = 0;
 
     //Algorithm of CalClass.Calculate1()
     //{        
@@ -65,15 +65,18 @@ class Program
     {
         CalClass CF = new CalClass();
         int i = 0;
-        int thCountLocal = thCount;
-        thCount++;
+        int localThIdx = thIdx++;
+        Console.WriteLine("localThIdx: {0}", localThIdx);
 
+        int lowerBound = 10000000 / 2 * localThIdx;
+        int upperBound = 10000000 / 2 * (localThIdx + 1);
+        int localIdx = lowerBound;
+        Console.WriteLine("Th{0} | lowerBound: {1}\t upperBound: {2}\t localIdx: {3}", localThIdx, lowerBound, upperBound, localIdx);
         while (i < 30)
         {
-            int localIndex = 10000000 / 2 * thCountLocal;
-            while (localIndex < 10000000 / 2 * (thCountLocal+1))
+            while (localIdx < upperBound)
             {
-                result += CF.Calculate1(ref data, ref localIndex);
+                result += CF.Calculate1(ref data, ref localIdx);
             }
             i++;
         }
