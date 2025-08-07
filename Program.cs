@@ -71,7 +71,7 @@ class Program
         int lowerBound = 10000000 / 2 * localThIdx;
         int upperBound = 10000000 / 2 * (localThIdx + 1);
         int localIdx = lowerBound;
-        Console.WriteLine("Th{0} | lowerBound: {1}\t upperBound: {2}\t localIdx: {3}", localThIdx, lowerBound, upperBound, localIdx);
+        Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t localIdx: {localIdx}");
         while (i < 30)
         {
             while (localIdx < upperBound)
