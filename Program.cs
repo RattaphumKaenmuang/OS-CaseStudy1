@@ -75,6 +75,7 @@ class Program
         Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t localIdx: {localIdx}");
         while (i < 30)
         {
+            localIdx = lowerBound;
             while (localIdx < upperBound)
             {
                 localResult += CF.Calculate1(ref data, ref localIdx);
