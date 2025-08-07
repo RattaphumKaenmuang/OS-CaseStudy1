@@ -12,8 +12,8 @@ class Program
 {
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
-    static int index = 0;
-    static int thIdx = 0;
+    const int threadCount = 8;
+    static int chunkSize = 10000000 / threadCount;
 
     //Algorithm of CalClass.Calculate1()
     //{        
@@ -66,13 +66,14 @@ class Program
         CalClass CF = new CalClass();
         int i = 0;
         int localThIdx = (int)obj;
-        Console.WriteLine("localThIdx: {0}", localThIdx);
+        Console.WriteLine($"Th{localThIdx} initialised.");
 
-        int lowerBound = 10000000 / 2 * localThIdx;
-        int upperBound = 10000000 / 2 * (localThIdx + 1);
+        int lowerBound = chunkSize * localThIdx;
+        int upperBound = chunkSize * (localThIdx + 1);
         int localIdx = lowerBound;
         decimal localResult = 0;
         Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t localIdx: {localIdx}");
+
         while (i < 30)
         {
             localIdx = lowerBound;
@@ -85,7 +86,7 @@ class Program
 
         lock (typeof(Program))
         {
-            result += localResult;        
+            result += localResult;
         }
     }
 
@@ -106,23 +107,26 @@ class Program
     {
         LoadData();
         Console.WriteLine("Calculation start ...");
-
-        Thread Th1 = new Thread(ThreadWork);
-        Thread Th2 = new Thread(ThreadWork);
+        Thread[] threads = new Thread[threadCount];
+        for (int i = 0; i < threadCount; i++)
+        {
+            threads[i] = new Thread(ThreadWork);
+        }
 
         Stopwatch _st = new Stopwatch();
         _st.Start();
 
-        Th1.Start(0);
-        Th2.Start(1);
-        Th1.Join(); // Wait for the thread to finish
-        Th2.Join(); // Wait for the thread to finish
+        for (int i = 0; i < threadCount; i++)
+        {
+            threads[i].Start(i);
+        }
+
+        for (int i = 0; i < threadCount; i++)
+        {
+            threads[i].Join();
+        }
 
         _st.Stop();
         Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {result.ToString("F25")}");
-
-        int matching_int = Decimal.Compare(result, (decimal)715.5556661152230339999809352);
-        bool matching = (matching_int == 0);
-        Console.WriteLine($"Result Matching: {matching}");
     }
 }
