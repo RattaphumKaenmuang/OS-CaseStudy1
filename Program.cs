@@ -12,8 +12,11 @@ class Program
 {
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
-    const int threadCount = 8;
-    static int chunkSize = 10000000 / threadCount;
+    const int MAX_TH_COUNT = 3;
+    const int MAX_IDX = 10000000;
+    static int chunkSize = MAX_IDX / MAX_TH_COUNT;
+    static Thread[] threads = new Thread[MAX_TH_COUNT];
+    static decimal[] threadResults = new decimal[MAX_TH_COUNT];
 
     //Algorithm of CalClass.Calculate1()
     //{        
@@ -64,30 +67,33 @@ class Program
     private static void ThreadWork(object obj)
     {
         CalClass CF = new CalClass();
-        int i = 0;
         int localThIdx = (int)obj;
         Console.WriteLine($"Th{localThIdx} initialised.");
 
-        int lowerBound = chunkSize * localThIdx;
-        int upperBound = chunkSize * (localThIdx + 1);
-        int localIdx = lowerBound;
-        decimal localResult = 0;
-        Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t localIdx: {localIdx}");
+        decimal[] localData = new decimal[data.Length];
+        Array.Copy(data, localData, data.Length);
 
+        int lowerBound = chunkSize * localThIdx;
+        int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
+        Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
+
+        decimal localResult = 0;
+        long loopCount = 0;
+
+        int i = 0;
         while (i < 30)
         {
-            localIdx = lowerBound;
+            int localIdx = lowerBound;
             while (localIdx < upperBound)
             {
-                localResult += CF.Calculate1(ref data, ref localIdx);
+                loopCount++;
+                localResult += CF.Calculate1(ref localData, ref localIdx);
             }
             i++;
         }
+        Console.WriteLine($"Th{localThIdx} Looped {loopCount} times.");
 
-        lock (typeof(Program))
-        {
-            result += localResult;
-        }
+        threadResults[localThIdx] = localResult;
     }
 
     private static void LoadData()
@@ -107,8 +113,7 @@ class Program
     {
         LoadData();
         Console.WriteLine("Calculation start ...");
-        Thread[] threads = new Thread[threadCount];
-        for (int i = 0; i < threadCount; i++)
+        for (int i = 0; i < MAX_TH_COUNT; i++)
         {
             threads[i] = new Thread(ThreadWork);
         }
@@ -116,14 +121,20 @@ class Program
         Stopwatch _st = new Stopwatch();
         _st.Start();
 
-        for (int i = 0; i < threadCount; i++)
+        for (int i = 0; i < MAX_TH_COUNT; i++)
         {
             threads[i].Start(i);
         }
 
-        for (int i = 0; i < threadCount; i++)
+        for (int i = 0; i < MAX_TH_COUNT; i++)
         {
             threads[i].Join();
+            result += threadResults[i];
+        }
+
+        for (int i = 0; i < MAX_TH_COUNT; i++)
+        {
+            Console.WriteLine($"Th{i} Result: {threadResults[i]}");
         }
 
         _st.Stop();
