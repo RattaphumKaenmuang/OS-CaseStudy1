@@ -11,12 +11,13 @@ using System.Diagnostics;
 class Program
 {
     static decimal[] data = new decimal[11000001];
-    static decimal result = 0;
+    // static decimal result = 0;
     const int MAX_TH_COUNT = 8;
     const int MAX_IDX = 10000000;
     static int chunkSize = MAX_IDX / MAX_TH_COUNT;
     static Thread[] threads = new Thread[MAX_TH_COUNT];
-    static decimal[] threadResults = new decimal[MAX_TH_COUNT];
+    // static decimal[] threadResults = new decimal[MAX_TH_COUNT];
+    static decimal[] results = new decimal[30 * MAX_IDX];
 
     //Algorithm of CalClass.Calculate1()
     //{        
@@ -77,22 +78,21 @@ class Program
         int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
         Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
-        decimal localResult = 0;
+        // decimal localResult = 0;
 
         for (int i = 0; i < 30; i++)
         {
             int localIdx = lowerBound;
             while (localIdx < upperBound)
             {
-                decimal calc = CF.Calculate1(ref localData, ref localIdx);
-                localResult += calc;
+                results[i*MAX_IDX + localIdx] = CF.Calculate1(ref localData, ref localIdx);
             }
         }
 
-        lock (typeof(Program))
-        {
-            threadResults[localThIdx] = localResult;
-        }
+        // lock (typeof(Program))
+        // {
+        //     threadResults[localThIdx] = localResult;
+        // }
     }
 
     private static void LoadData()
@@ -131,6 +131,6 @@ class Program
         }
 
         _st.Stop();
-        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {threadResults.Sum().ToString("F25")}");
+        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {results.Sum().ToString("F25")}");
     }
 }
