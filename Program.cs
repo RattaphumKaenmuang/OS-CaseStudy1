@@ -12,7 +12,7 @@ class Program
 {
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
-    const int MAX_TH_COUNT = 3;
+    const int MAX_TH_COUNT = 8;
     const int MAX_IDX = 10000000;
     static int chunkSize = MAX_IDX / MAX_TH_COUNT;
     static Thread[] threads = new Thread[MAX_TH_COUNT];
@@ -78,22 +78,21 @@ class Program
         Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
         decimal localResult = 0;
-        long loopCount = 0;
 
-        int i = 0;
-        while (i < 30)
+        for (int i = 0; i < 30; i++)
         {
             int localIdx = lowerBound;
             while (localIdx < upperBound)
             {
-                loopCount++;
-                localResult += CF.Calculate1(ref localData, ref localIdx);
+                decimal calc = CF.Calculate1(ref localData, ref localIdx);
+                localResult += calc;
             }
-            i++;
         }
-        Console.WriteLine($"Th{localThIdx} Looped {loopCount} times.");
 
-        threadResults[localThIdx] = localResult;
+        lock (typeof(Program))
+        {
+            threadResults[localThIdx] = localResult;
+        }
     }
 
     private static void LoadData()
@@ -129,15 +128,9 @@ class Program
         for (int i = 0; i < MAX_TH_COUNT; i++)
         {
             threads[i].Join();
-            result += threadResults[i];
-        }
-
-        for (int i = 0; i < MAX_TH_COUNT; i++)
-        {
-            Console.WriteLine($"Th{i} Result: {threadResults[i]}");
         }
 
         _st.Stop();
-        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {result.ToString("F25")}");
+        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {threadResults.Sum().ToString("F25")}");
     }
 }
