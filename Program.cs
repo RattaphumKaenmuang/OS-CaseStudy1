@@ -16,7 +16,6 @@ class Program
     const int MAX_IDX = 10000000;
     static int chunkSize = MAX_IDX / MAX_TH_COUNT;
     static Thread[] threads = new Thread[MAX_TH_COUNT];
-    // static decimal[] threadResults = new decimal[MAX_TH_COUNT];
     static decimal[] results = new decimal[30 * MAX_IDX];
 
     //Algorithm of CalClass.Calculate1()
@@ -69,30 +68,21 @@ class Program
     {
         CalClass CF = new CalClass();
         int localThIdx = (int)obj;
-        Console.WriteLine($"Th{localThIdx} initialised.");
-
-        decimal[] localData = new decimal[data.Length];
-        Array.Copy(data, localData, data.Length);
+        // Console.WriteLine($"Th{localThIdx} initialised.");
 
         int lowerBound = chunkSize * localThIdx;
         int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
-        Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
+        // Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
-        // decimal localResult = 0;
 
         for (int i = 0; i < 30; i++)
         {
             int localIdx = lowerBound;
             while (localIdx < upperBound)
             {
-                results[i*MAX_IDX + localIdx] = CF.Calculate1(ref localData, ref localIdx);
+                results[i*MAX_IDX + localIdx] = CF.Calculate1(ref data, ref localIdx);
             }
         }
-
-        // lock (typeof(Program))
-        // {
-        //     threadResults[localThIdx] = localResult;
-        // }
     }
 
     private static void LoadData()
