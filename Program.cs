@@ -74,7 +74,6 @@ class Program
         int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
         // Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
-
         for (int i = 0; i < 30; i++)
         {
             int localIdx = lowerBound;
@@ -119,8 +118,8 @@ class Program
         {
             threads[i].Join();
         }
-
+        decimal res = results.Sum();
         _st.Stop();
-        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {results.Sum().ToString("F25")}");
+        Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {res.ToString("F25")}");
     }
 }
