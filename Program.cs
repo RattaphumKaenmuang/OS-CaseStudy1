@@ -12,7 +12,7 @@ class Program
 {
     static decimal[] data = new decimal[11000001];
     // static decimal result = 0;
-    const int MAX_TH_COUNT = 8;
+    const int MAX_TH_COUNT = 12;
     const int MAX_IDX = 10000000;
     static int chunkSize = MAX_IDX / MAX_TH_COUNT;
     static Thread[] threads = new Thread[MAX_TH_COUNT];
@@ -74,12 +74,15 @@ class Program
         int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
         // Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
+        decimal[] localData = new decimal[upperBound - lowerBound];
+        Array.Copy(data, lowerBound, localData, 0, upperBound - lowerBound);
+
         for (int i = 0; i < 30; i++)
         {
-            int localIdx = lowerBound;
-            while (localIdx < upperBound)
+            int localIdx = 0;
+            while (localIdx < localData.Length)
             {
-                results[i*MAX_IDX + localIdx] = CF.Calculate1(ref data, ref localIdx);
+                results[i * MAX_IDX + lowerBound + localIdx] = CF.Calculate1(ref localData, ref localIdx);
             }
         }
     }
