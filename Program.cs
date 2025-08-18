@@ -121,7 +121,29 @@ class Program
         {
             threads[i].Join();
         }
-        decimal res = results.Sum();
+
+        // for (int i = results.Length - 1000; i < results.Length; i++)
+        // {
+        //     Console.WriteLine(results[i]);
+        // }
+        decimal res = 0;
+        int consecutiveZeroes = 0;
+        
+        Span<decimal> resultsSpan = results.AsSpan();
+        for (int i = 0; i < resultsSpan.Length; i++)
+        {
+            if (resultsSpan[i] == 0m)
+            {
+                consecutiveZeroes++;
+                if (consecutiveZeroes > 10)
+                {
+                    break;
+                }
+                continue;
+            }
+            res += resultsSpan[i];
+            consecutiveZeroes = 0;
+        }
         _st.Stop();
         Console.WriteLine($"Calculation finished in {_st.ElapsedMilliseconds} ms. Result: {res.ToString("F25")}");
     }
