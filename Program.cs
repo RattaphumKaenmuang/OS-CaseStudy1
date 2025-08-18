@@ -123,10 +123,9 @@ class Program
         decimal res = 0;
         int consecutiveZeroes = 0;
         
-        Span<decimal> resultsSpan = results.AsSpan();
-        for (int i = 0; i < resultsSpan.Length; i++)
+        for (int i = 0; i < results.Length; i++)
         {
-            if (resultsSpan[i] == 0m)
+            if (results[i] == 0m)
             {
                 consecutiveZeroes++;
                 if (consecutiveZeroes > 10)
@@ -135,7 +134,7 @@ class Program
                 }
                 continue;
             }
-            res += resultsSpan[i];
+            res += results[i];
             consecutiveZeroes = 0;
         }
         _st.Stop();
