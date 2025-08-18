@@ -68,11 +68,9 @@ class Program
     {
         CalClass CF = new CalClass();
         int localThIdx = (int)obj;
-        // Console.WriteLine($"Th{localThIdx} initialised.");
 
         int lowerBound = chunkSize * localThIdx;
         int upperBound = (localThIdx == MAX_TH_COUNT - 1) ? MAX_IDX : chunkSize * (localThIdx + 1);
-        // Console.WriteLine($"Th{localThIdx} | lowerBound: {lowerBound}\t upperBound: {upperBound}\t");
 
         decimal[] localData = new decimal[upperBound - lowerBound];
         Array.Copy(data, lowerBound, localData, 0, upperBound - lowerBound);
@@ -122,10 +120,6 @@ class Program
             threads[i].Join();
         }
 
-        // for (int i = results.Length - 1000; i < results.Length; i++)
-        // {
-        //     Console.WriteLine(results[i]);
-        // }
         decimal res = 0;
         int consecutiveZeroes = 0;
         
